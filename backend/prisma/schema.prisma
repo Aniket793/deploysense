@@ -1,0 +1,47 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Repo {
+  id        String     @id @default(cuid())
+  name      String     @db.VarChar(100)
+  url       String     @unique
+  mode      Mode       @default(simulation)
+  createdAt DateTime   @default(now())
+  pipelines Pipeline[]
+}
+
+model Pipeline {
+  id        String   @id @default(cuid())
+  repoId    String
+  repo      Repo     @relation(fields: [repoId], references: [id], onDelete: Cascade)
+  status    Status
+  timestamp DateTime @default(now())
+  duration  Int?
+  log       Log?
+
+  @@index([repoId])
+}
+
+model Log {
+  id         String   @id @default(cuid())
+  pipelineId String   @unique
+  pipeline   Pipeline @relation(fields: [pipelineId], references: [id], onDelete: Cascade)
+  content    String   @db.Text
+}
+
+enum Mode {
+  simulation
+  live
+}
+
+enum Status {
+  success
+  failed
+  running
+}
