@@ -1,11 +1,12 @@
+import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
-import { config } from 'dotenv';
-config();
 import prisma from './config/prisma.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import logger from './middleware/logger.js';
 import repoRoutes from './routes/repoRoutes.js';
+import pipelineRoutes from './routes/pipelineRoutes.js';
+import logRoutes from './routes/logRoutes.js';
 
 
 
@@ -33,6 +34,10 @@ app.get('/health', async (req, res) => {
 // ─── Routes ───────────────────────────────────────────────────
 app.use('/api/repos', repoRoutes);
 
+app.use('/api/pipelines', pipelineRoutes);
+
+app.use('/api/logs', logRoutes);
+
 // ─── Error Handler (must be last) ─────────────────────────────
 app.use(errorHandler);
 
@@ -41,4 +46,4 @@ app.listen(PORT, () => {
   logger.info(`Server running on port ${PORT}`);
 });
 
-export default app;
+export default app; 
